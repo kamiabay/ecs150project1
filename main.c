@@ -20,7 +20,23 @@ int main(void)
 
         /* Get command line */
         fgets(cmd, CMDLINE_MAX, stdin);
-        printf("%s\n", cmd);
+
+        int i = 0;
+        char *token = strtok(cmd, "<|");
+        char *commands[16];
+        char *val;
+        while (token != NULL)
+        {
+            commands[i] = token;
+            i++;
+            token = strtok(NULL, " ");
+            //strcat(val, token);
+        }
+        printf("%s", commands);
+        execvp(commands[0], commands);
+        // execvp(cmd[0], cmd);
+        // char *s[4] = {"ls", "-l", "-a", NULL};
+        // execvp(s[0], s);
         /* Print command line if stdin is not provided by terminal */
         if (!isatty(STDIN_FILENO))
         {
