@@ -53,14 +53,14 @@ void redirect(char *process1, char *filename)
 {
     writeToFile(filename);
     run(process1);
-//     int fd[2];
-//     pipe(fd);
-//     pid_t pid = fork();
-//     if (pid == 0)
-//     { // child
-//         writeToFile(filename);
-//         run(process1);
-//     }
+    int fd[2];
+    pipe(fd);
+    pid_t pid = fork();
+    if (pid == 0)
+    { // child
+        writeToFile(filename);
+        run(process1);
+    }
 }
 
 void execute(char *commands[16])
