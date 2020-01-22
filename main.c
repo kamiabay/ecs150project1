@@ -3,6 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <stdbool.h>
 
 #define CMDLINE_MAX 512
 void run(char *cmd)
@@ -53,14 +54,6 @@ void redirect(char *process1, char *filename)
 {
     writeToFile(filename);
     run(process1);
-    int fd[2];
-    pipe(fd);
-    pid_t pid = fork();
-    if (pid == 0)
-    { // child
-        writeToFile(filename);
-        run(process1);
-    }
 }
 
 void execute(char *commands[16])
@@ -82,7 +75,7 @@ void execute(char *commands[16])
         strcat(path, "/");
         strcat(path, values[1]);
         path[strlen(path) - 2] = 0;
-        chdir(path); /// needs a space at the end to work e.g "folder "
+        chdir(path); /// needs a space at the end to word e.g "folder "
     }
     else if (strstr(commands[0], "pwd") != NULL)
     {
@@ -103,12 +96,24 @@ void execute(char *commands[16])
 void parse(char *cmd)
 {
     int i = 0;
+    bool numRedirectError = false;
+    bool numPipeError = false;
+    if (strstr(cmd, ">&") != NULL)
+    {
+        numRedirectError = true;
+    }
+
+    if (strstr(cmd, "|&") != NULL)
+    {
+        numPipeError = false;
+    }
+
     char *token = strtok(cmd, ">|");
     char *commands[16];
     while (token != NULL)
     {
         commands[i] = token;
-        commands[i][strlen(commands[i]) - 1] = 0;
+        commands[i][strlen(commands[i]) - 1] = 0; /// adds NULL to each
         i++;
         token = strtok(NULL, ">|");
     }
