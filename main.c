@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <fcntl.h>
 
 #define CMDLINE_MAX 512
 void run(char *cmd)
@@ -42,6 +43,25 @@ void pipeline(char *process1, char *process2)
         run(process1);
     }
 }
+void writeToFile(char *fileName)
+{
+    int filedesc = open(fileName, O_RDWR);
+    dup2(filedesc, STDOUT_FILENO);
+    close(filedesc);
+}
+void redirect(char *process1, char *filename)
+{
+    writeToFile(filename);
+    run(process1);
+    int fd[2];
+    pipe(fd);
+    pid_t pid = fork();
+    if (pid == 0)
+    { // child
+        writeToFile(filename);
+        run(process1);
+    }
+}
 
 void execute(char *commands[16])
 {
@@ -74,8 +94,9 @@ void execute(char *commands[16])
         pid = fork();
         if (pid == 0)
         {
-            // pipeline(commands[0], commands[1]);
-            run(commands[0]);
+            redirect(commands[0], "test.txt");
+            //pipeline(commands[0], commands[1]);
+            //run(commands[0]);
         }
     }
 }
@@ -124,9 +145,8 @@ void readExecute()
             break;
         }
         /* Regular command */
-        //retval = system(cmd); /// nopeeeee
-        fprintf(stdout, "Return status value for '%s': %d\n",
-                cmd, retval);
+        // fprintf(stdout, "Return status value for '%s': %d\n",
+        //         cmd, retval);
     }
 }
 int main(void)
