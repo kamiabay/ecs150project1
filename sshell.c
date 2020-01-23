@@ -9,6 +9,8 @@
 #define CMDLINE_MAX 512
 #define ARG_MAX 16
 
+int EXIT_GLOBAL = 0;
+
 void printError(char *errorMessage)
 {
     fprintf(stderr, "%s", errorMessage);
@@ -48,45 +50,49 @@ void run(char *cmd)
         }
     }
     if (i > ARG_MAX)
-    {
         printError("Error: too many process arguments\n");
-    }
     else
     {
         execvp(arg[0], arg);
+        exit(EXIT_FAILURE);
     }
 }
 
 void pipeline(char *process1, char *process2)
 {
     int fd[2];
-    pipe(fd);
+    pipe(fd); // makes a little buffer area i.e the pipe
     pid_t pid = fork();
     if (pid == 0)
     { // child
-        close(fd[1]);
-        close(STDIN_FILENO);
-        dup(fd[0]);
-        close(fd[0]);
-        run(process2);
-    }
-    else
-    { // parent
-        close(fd[0]);
         dup2(fd[1], STDOUT_FILENO);
         close(fd[1]);
         run(process1);
     }
+    else
+    { // parent
+        close(fd[1]);
+        dup2(fd[0], STDIN_FILENO);
+        close(fd[0]);
+        run(process2);
+    }
 }
-void writeToFile(char *fileName)
+void writeToFile(char *fileName, int typeOfFile)
 {
+    fileName = removeWhiteSpace(fileName); /// should work
     int filedesc = open(fileName, O_RDWR | O_CREAT);
     //perror("open");
     if (filedesc < 0)
-    {
         printError("Error: cannot open output file\n");
+    if (typeOfFile == STDERR_FILENO)
+    {
+        fflush(stdout);
+        fflush(stderr);
+        dup2(filedesc, STDOUT_FILENO);
+        dup2(filedesc, STDERR_FILENO);
     }
-    dup2(filedesc, STDOUT_FILENO);
+    else
+        dup2(filedesc, STDOUT_FILENO);
     close(filedesc);
 }
 
@@ -97,19 +103,15 @@ int is_empty(const char *s)
     return !*s;
 } //// https://stackoverflow.com/questions/3981510/getline-check-if-line-is-whitespace
 
-void redirect(char *process1, char *filename)
+void redirect(char *process1, char *filename, int typeOfFile)
 {
     if (strlen(process1) == 0)
-    {
         printError("Error: missing command\n");
-    }
     else if (is_empty(filename))
-    {
         printError("Error: no output file\n");
-    }
     else
     {
-        writeToFile(filename);
+        writeToFile(filename, typeOfFile);
         run(process1);
     }
 }
@@ -132,61 +134,68 @@ void execute(char *commands[16], char *type)
         getcwd(path, sizeof(path));
         strcat(path, "/");
         strcat(path, values[1]);
-        chdir(path);
+        int existValue = chdir(path);
+        if (existValue != 0) /// works
+            printf("Error: no such directory\n");
+        printf("+ completed '%s %s' [%i] \n", commands[0], values[1], existValue);
     }
     else if (strstr(commands[0], "pwd") != NULL)
     {
         getcwd(path, sizeof(path));
         fflush(stdout);
         printf("%s\n", path);
+        printf("+ completed '%s' [0] \n", commands[0]); // works
     }
     else
     {
         pid = fork();
         if (pid == 0)
         {
-            char *rdr = "redirect";
-            char *pipe = "pipe";
-            if (!strcmp(type, rdr))
-            {
-                redirect(commands[0], commands[1]);
-            }
-            else if (!strcmp(type, pipe))
-            {
+            if (!strcmp(type, "redirect"))
+                redirect(commands[0], commands[1], STDOUT_FILENO);
+            else if (!strcmp(type, "redirectError"))
+                redirect(commands[0], commands[1], STDERR_FILENO);
+            else if (!strcmp(type, "pipe"))
                 pipeline(commands[0], commands[1]);
-            }
             else
                 run(commands[0]);
         }
         int status;
         wait(&status);
-        printf("after child\n");
+        printf("+ completed '%s' [%d] \n", commands[0], WEXITSTATUS(status));
     }
 }
 void parse(char *cmd)
 {
-
-    bool isRedirect = false, isPipe = false;
-    if (strstr(cmd, ">") != NULL)
+    bool isRedirect = false, isPipe = false, isRedirectError = false;
+    if (strstr(cmd, ">&") != NULL)
+        isRedirectError = true;
+    else if (strstr(cmd, ">") != NULL)
         isRedirect = true;
-
-    if (strstr(cmd, "|") != NULL)
+    else if (strstr(cmd, "|") != NULL)
         isPipe = true;
 
     int i = 0;
-    char *token = strtok(cmd, ">|");
+    char *token = strtok(cmd, ">|&");
     char *commands[16];
     while (token != NULL)
     {
+        // printf("before = '%s'\n", token);
+        // printf("before size = %lu\n", strlen(token));
+        //token[strlen(token) - 1] = '\0';
         commands[i] = token;
-        //printf("command is =%s\n", commands[i]);
-        commands[i][strlen(commands[i]) - 1] = 0; /// adds NULL to each
+        commands[i][strlen(commands[i]) - 1] = '\0'; /// adds NULL to each
+        // printf("after = '%s'\n", commands[i]);
+        // printf("after size = %lu\n", strlen(commands[i]));
         i++;
-        token = strtok(NULL, ">|");
+        token = strtok(NULL, ">|&");
     }
+
     if (isRedirect)
         execute(commands, "redirect");
-    if (isPipe)
+    else if (isRedirectError)
+        execute(commands, "redirectError");
+    else if (isPipe)
         execute(commands, "pipe");
     else
         execute(commands, "none");
@@ -215,15 +224,11 @@ void readExecute()
         nl = strchr(cmd, '\n');
         if (nl)
             *nl = '\0';
-        /* Builtin command */
-        if (!strcmp(cmd, "exit"))
+        if (strstr(cmd, "exit") != NULL)
         {
             fprintf(stderr, "Bye...\n");
             break;
         }
-        /* Regular command */
-        // fprintf(stdout, "Return status value for '%s': %d\n",
-        //         cmd, retval);
     }
 }
 int main(void)
