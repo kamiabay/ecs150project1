@@ -1,9 +1,0 @@
-sshell$ 
-README.md
-a.out
-command.h
-folder
-main.c
-sshell.c
-test copy.txt
-test.txt
