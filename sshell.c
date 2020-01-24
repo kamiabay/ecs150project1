@@ -121,7 +121,7 @@ void redirect(char *process1, char *filename, int typeOfFile)
 
 void execute(char *originalCommand, char *commands[16], char *type)
 {
-    int status;
+
     char path[1000];                       // could be any long
     if (strstr(commands[0], "cd") != NULL) /// does the cd function
     {
@@ -152,6 +152,7 @@ void execute(char *originalCommand, char *commands[16], char *type)
     }
     else
     {
+        int status;
         pid_t pid;
         pid = fork();
         if (pid == 0) // run the program in a child environment and come back to the parnet after
@@ -164,6 +165,7 @@ void execute(char *originalCommand, char *commands[16], char *type)
                 pipeline(commands[0], commands[1]);
             else
                 run(commands[0]);
+            perror("problem");
             exit(1);
         }
         else if (pid > 0)
