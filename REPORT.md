@@ -76,8 +76,6 @@ The biggest aspect of our program is that we decided to separate relevant blocks
 ### Extra Functions
   * `removeWhiteSpace()` - called in `writeToFile()`; removes any whitespace
   within the passed string.
-  * `is_space()` - checks if the entire passed string is empty. Source:
-https://stackoverflow.com/questions/3981510/getline-check-if-line-is-whitespace
   * `printError()`- simple function to print out error statements.
 
 ### Testing
@@ -89,4 +87,4 @@ error, we tested using the tester script on Gradescope.
 ALL the tests work and are EXACTLY like the one that professor sent but nothing shows up on gradescoop , 
 we basically got ZER0.
 
-can you please tell me what is wrong in after you review our code.
+can you please tell us what is wrong with our code after you review it. thank you.
