@@ -60,7 +60,7 @@ void run(char *cmd)
         exit(EXIT_FAILURE);
     }
 }
-
+// sdsd
 void pipeline(char *process1, char *process2)
 {
     int fd[2];
