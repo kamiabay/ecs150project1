@@ -1,8 +1,0 @@
-{
-    "files.associations": {
-        "cstdlib": "cpp",
-        "__config": "c",
-        "ctype.h": "c",
-        "cstdio": "cpp"
-    }
-}
