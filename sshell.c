@@ -5,6 +5,7 @@
 #include <fcntl.h>
 #include <stdbool.h>
 #include <ctype.h>
+#include <sys/types.h>
 #include <sys/wait.h>
 
 #define CMDLINE_MAX 512
