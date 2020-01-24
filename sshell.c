@@ -234,7 +234,7 @@ void readExecute()
         if (strstr(cmd, "exit") != NULL)
         {
             fprintf(stderr, "Bye...\n");
-            fprintf(stderr, " '+ completed 'exit' [0]'\n");
+            fprintf(stderr, "+ completed 'exit' [0]\n");
 
             break;
         }
