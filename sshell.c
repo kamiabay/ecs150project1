@@ -60,7 +60,7 @@ void run(char *cmd)
         exit(EXIT_FAILURE);
     }
 }
-// sdsdaaas
+// sdsd
 void pipeline(char *process1, char *process2)
 {
     int fd[2];
@@ -73,7 +73,9 @@ void pipeline(char *process1, char *process2)
         run(process1);
     }
     else
-    { // parentç
+    { // parent
+        int status;
+        wait(&status);
         close(fd[1]);
         dup2(fd[0], STDIN_FILENO);
         close(fd[0]);
@@ -166,6 +168,7 @@ void execute(char *originalCommand, char *commands[16], char *type)
         }
         int status;
         wait(&status);
+        waitpid(-1, &status, 0);
         if (!strcmp(type, "redirect"))
         {
             fprintf(stderr, "+ completed '%s' [%d] \n", originalCommand, WEXITSTATUS(status));
