@@ -141,6 +141,7 @@ void execute(char *originalCommand, char *commands[16], char *type)
         int existValue = chdir(path);
         if (existValue != 0) /// works
             fprintf(stderr, "Error: no such directory\n");
+
         fprintf(stderr, "+ completed '%s %s' [%i] \n", commands[0], values[1], existValue);
     }
     else if (strstr(commands[0], "pwd") != NULL)
