@@ -141,7 +141,7 @@ void execute(char *originalCommand, char *commands[16], char *type)
         int existValue = chdir(path);
         if (existValue != 0) /// works
             fprintf(stderr, "Error: no such directory\n");
-        fprintf(stderr, "+ a '%s %s' [%i] \n", commands[0], values[1], existValue);
+        fprintf(stderr, "+ completed '%s %s' [%i]\n", commands[0], values[1], existValue);
     }
     else if (strstr(commands[0], "pwd") != NULL)
     {
@@ -170,7 +170,7 @@ void execute(char *originalCommand, char *commands[16], char *type)
 
             wait(&status);
             waitpid(-1, &status, 0);
-            fprintf(stderr, "+ a '%s' [%d]\n", originalCommand, WEXITSTATUS(status));
+            fprintf(stderr, "+ completed '%s' [%d]\n", originalCommand, WEXITSTATUS(status));
         }
         else
         {
