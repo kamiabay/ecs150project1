@@ -13,9 +13,11 @@
 #define MAX_SIZE_STRING 16
 ///////
 //////
+/////
 ////
-///
-// our porgram works perfect on mac/csif yet we use tster or gardescp it looks like it is not reading our output
+/// our porgram works perfectly on mac/csif YET
+// we when we use the tester or gradescoop it looks like it is not reading our output
+// please tell us what is wrong in the code, if you run this it works
 
 void printError(char *errorMessage) // prints the erros
 {
@@ -97,20 +99,10 @@ void writeToFile(char *fileName, int typeOfFile)
         dup2(filedesc, STDOUT_FILENO); // only iutput goes to the file
     close(filedesc);
 }
-
-int is_empty(const char *s)
-{                              // easy to implement, literally had no time
-    while (isspace(*s) && s++) //this is going thorugh the string and
-        ;                      // if it sees anything but a space it returns with false
-    return !*s;
-} //// https://stackoverflow.com/questions/3981510/getline-check-if-line-is-whitespace
-
 void redirect(char *process1, char *filename, int typeOfFile)
 {
     if (strlen(process1) == 0)
         printError("Error: missing command\n");
-    else if (is_empty(filename))
-        printError("Error: no output file\n");
     else
     {
         writeToFile(filename, typeOfFile); // points the output to the file depending if > or >&
@@ -121,7 +113,7 @@ void redirect(char *process1, char *filename, int typeOfFile)
 void execute(char *originalCommand, char *commands[16], char *type)
 {
 
-    char path[1000];                       // could be any long
+    char path[1000];
     if (strstr(commands[0], "cd") != NULL) /// does the cd function
     {
         char *token2 = strtok(commands[0], " ");
