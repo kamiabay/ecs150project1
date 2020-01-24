@@ -74,8 +74,6 @@ void pipeline(char *process1, char *process2)
     }
     else
     { // parent
-        int status;
-        wait(&status);
         close(fd[1]);
         dup2(fd[0], STDIN_FILENO);
         close(fd[0]);
