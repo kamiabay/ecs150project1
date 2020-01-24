@@ -84,7 +84,7 @@ void writeToFile(char *fileName, int typeOfFile)
     //perror("open");
     if (filedesc < 0)
         printError("Error: cannot open output file\n");
-    printf("value = %i", typeOfFile);
+    // printf("value = %i", typeOfFile);
     if (typeOfFile == STDERR_FILENO)
     {
         fflush(stdout);
@@ -152,7 +152,6 @@ void execute(char *originalCommand, char *commands[16], char *type)
         pid = fork();
         if (pid == 0)
         {
-            printf("type = %s\n", type);
             if (!strcmp(type, "redirect"))
                 redirect(commands[0], commands[1], STDOUT_FILENO);
             else if (!strcmp(type, "redirectError"))
@@ -174,8 +173,8 @@ void execute(char *originalCommand, char *commands[16], char *type)
 }
 void parse(char *cmd)
 {
-    // dup2(0);
-    char *originalCommand = cmd;
+    char *originalCommand = strdup(cmd);
+    originalCommand[strlen(originalCommand) - 1] = '\0';
     bool isRedirect = false, isPipe = false, isRedirectError = false, isPipeError = false;
     if (strstr(cmd, ">&") != NULL)
         isRedirectError = true;
