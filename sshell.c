@@ -70,36 +70,32 @@ void pipeline(char *process1, char *process2)
     pipe(fd); // makes a little buffer area i.e the pipe
     pid_t pid = fork();
     if (pid == 0)
-    { // child
-        dup2(fd[1], STDOUT_FILENO);
+    {                               // child
+        dup2(fd[1], STDOUT_FILENO); /// makes it so now it will write to the pipe
         close(fd[1]);
-        run(process1);
+        run(process1); // run the process // out put goes into file
     }
     else
     { // parent
         close(fd[1]);
-        dup2(fd[0], STDIN_FILENO);
+        dup2(fd[0], STDIN_FILENO); // points what comes in to the pipe
         close(fd[0]);
-        run(process2);
+        run(process2); // runs what was in the pipe
     }
 }
 void writeToFile(char *fileName, int typeOfFile)
 {
-    fileName = removeWhiteSpace(fileName); /// should work
+    fileName = removeWhiteSpace(fileName); /// removes white space
     int filedesc = open(fileName, O_RDWR | O_CREAT);
-    //perror("open");
     if (filedesc < 0)
         printError("Error: cannot open output file\n");
-    // printf("value = %i", typeOfFile);
-    if (typeOfFile == STDERR_FILENO)
+    if (typeOfFile == STDERR_FILENO) // if its a type >& then send both error and output to the file
     {
-        // fflush(stdout);
-        // fflush(stderr);
         dup2(filedesc, STDOUT_FILENO);
         dup2(filedesc, STDERR_FILENO);
     }
     else
-        dup2(filedesc, STDOUT_FILENO);
+        dup2(filedesc, STDOUT_FILENO); // only iutput goes to the file
     close(filedesc);
 }
 
@@ -118,17 +114,16 @@ void redirect(char *process1, char *filename, int typeOfFile)
         printError("Error: no output file\n");
     else
     {
-        writeToFile(filename, typeOfFile);
-        run(process1);
+        writeToFile(filename, typeOfFile); // points the output to the file depending if > or >&
+        run(process1);                     // runs the process and everything goes to the file
     }
 }
 
 void execute(char *originalCommand, char *commands[16], char *type)
 {
     int status;
-    char *path; // could be any long
-
-    if (strstr(commands[0], "cd") != NULL) /// working just need to add
+    char path[1000];                       // could be any long
+    if (strstr(commands[0], "cd") != NULL) /// does the cd function
     {
         char *token2 = strtok(commands[0], " ");
         char *values[32];
@@ -148,7 +143,7 @@ void execute(char *originalCommand, char *commands[16], char *type)
 
         fprintf(stderr, "+ completed '%s %s' [%i]\n", commands[0], values[1], existValue);
     }
-    else if (strstr(commands[0], "pwd") != NULL)
+    else if (strstr(commands[0], "pwd") != NULL) // does pwd function
     {
         getcwd(path, sizeof(path));
         // fflush(stdout);
@@ -159,7 +154,7 @@ void execute(char *originalCommand, char *commands[16], char *type)
     {
         pid_t pid;
         pid = fork();
-        if (pid == 0)
+        if (pid == 0) // run the program in a child environment and come back to the parnet after
         {
             if (!strcmp(type, "redirect"))
                 redirect(commands[0], commands[1], STDOUT_FILENO);
