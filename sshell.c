@@ -17,7 +17,7 @@ int EXIT_GLOBAL = 0;
 void printError(char *errorMessage)
 {
     fprintf(stderr, "%s", errorMessage);
-    fflush(stderr);
+    //  fflush(stderr);
     exit(-1);
 }
 char *removeWhiteSpace(char *string)
@@ -74,8 +74,6 @@ void pipeline(char *process1, char *process2)
     }
     else
     { // parent
-        int status;
-        wait(&status);
         close(fd[1]);
         dup2(fd[0], STDIN_FILENO);
         close(fd[0]);
@@ -92,8 +90,8 @@ void writeToFile(char *fileName, int typeOfFile)
     // printf("value = %i", typeOfFile);
     if (typeOfFile == STDERR_FILENO)
     {
-        fflush(stdout);
-        fflush(stderr);
+        // fflush(stdout);
+        // fflush(stderr);
         dup2(filedesc, STDOUT_FILENO);
         dup2(filedesc, STDERR_FILENO);
     }
@@ -148,7 +146,7 @@ void execute(char *originalCommand, char *commands[16], char *type)
     else if (strstr(commands[0], "pwd") != NULL)
     {
         getcwd(path, sizeof(path));
-        fflush(stdout);
+        // fflush(stdout);
         printf("%s\n", path);
         fprintf(stderr, "+ completed '%s' [0] \n", commands[0]); // works
     }
@@ -235,7 +233,6 @@ void readExecute()
         {
             fprintf(stderr, "Bye...\n");
             fprintf(stderr, "+ completed 'exit' [0]\n");
-
             break;
         }
         else
