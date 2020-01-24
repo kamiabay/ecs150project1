@@ -174,7 +174,7 @@ void execute(char *originalCommand, char *commands[16], char *type)
             // {
             //     //fprintf(stderr, "+ completed '%s' [%d]\n", originalCommand, WEXITSTATUS(status));
             // }
-            fprintf(stderr, "+ fuck '%s' [%d]\n", originalCommand, WEXITSTATUS(status));
+            fprintf(stderr, "+ hi '%s' [%d]\n", originalCommand, WEXITSTATUS(status));
         }
         else
         {
