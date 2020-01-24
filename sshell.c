@@ -170,13 +170,11 @@ void execute(char *originalCommand, char *commands[16], char *type)
 
             wait(&status);
             waitpid(-1, &status, 0);
-            if (!strcmp(type, "redirect"))
-            {
-
-                //fprintf(stderr, "+ completed '%s' [%d]\n", originalCommand, WEXITSTATUS(status));
-            }
-            else
-                fprintf(stderr, "+ completed '%s' [%d]\n", originalCommand, WEXITSTATUS(status));
+            // if (!strcmp(type, "redirect"))
+            // {
+            //     //fprintf(stderr, "+ completed '%s' [%d]\n", originalCommand, WEXITSTATUS(status));
+            // }
+            fprintf(stderr, "+ completed '%s' [%d]\n", originalCommand, WEXITSTATUS(status));
         }
         else
         {
