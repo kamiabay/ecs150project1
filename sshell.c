@@ -22,6 +22,7 @@ void printError(char *errorMessage) // prints the erros
     fprintf(stderr, "%s", errorMessage);
     //  fflush(stderr);
     // exit(-1);
+    //
 }
 char *removeWhiteSpace(char *string) // removes white spaces in a string
 {
