@@ -86,3 +86,5 @@ up and running, after each major change/addition, we tested with the various
 input/outputs from `project1.html`. After reaching the output redirection and 
 piping, we tested on the CSIF environment. Once we implemented redirection
 error, we tested using the tester script on Gradescope.
+ALL the tests work and are EXACTLY like the one that professor sent but nothing shows up on gradescoop , 
+we basically got ZER0.
