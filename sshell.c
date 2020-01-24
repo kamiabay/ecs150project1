@@ -164,15 +164,18 @@ void execute(char *originalCommand, char *commands[16], char *type)
             else
                 run(commands[0]);
         }
-        int status;
-        wait(&status);
-        waitpid(-1, &status, 0);
-        if (!strcmp(type, "redirect"))
-        {
-            fprintf(stderr, "+ completed '%s' [%d] \n", originalCommand, WEXITSTATUS(status));
-        }
         else
-            fprintf(stderr, "+ completed '%s' [%d] \n", originalCommand, WEXITSTATUS(status));
+        {
+            int status;
+            wait(&status);
+            waitpid(-1, &status, 0);
+            if (!strcmp(type, "redirect"))
+            {
+                fprintf(stderr, "+ completed '%s' [%d] \n", originalCommand, WEXITSTATUS(status));
+            }
+            else
+                fprintf(stderr, "+ completed '%s' [%d] \n", originalCommand, WEXITSTATUS(status));
+        }
     }
 }
 void parse(char *cmd)
