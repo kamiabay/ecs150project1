@@ -84,6 +84,7 @@ void writeToFile(char *fileName, int typeOfFile)
     //perror("open");
     if (filedesc < 0)
         printError("Error: cannot open output file\n");
+    printf("value = %i", typeOfFile);
     if (typeOfFile == STDERR_FILENO)
     {
         fflush(stdout);
@@ -116,7 +117,7 @@ void redirect(char *process1, char *filename, int typeOfFile)
     }
 }
 
-void execute(char *commands[16], char *type)
+void execute(char *originalCommand, char *commands[16], char *type)
 {
     char path[1000]; // could be any long
     pid_t pid;
@@ -151,6 +152,7 @@ void execute(char *commands[16], char *type)
         pid = fork();
         if (pid == 0)
         {
+            printf("type = %s\n", type);
             if (!strcmp(type, "redirect"))
                 redirect(commands[0], commands[1], STDOUT_FILENO);
             else if (!strcmp(type, "redirectError"))
@@ -162,14 +164,23 @@ void execute(char *commands[16], char *type)
         }
         int status;
         wait(&status);
-        printf("+ completed '%s' [%d] \n", commands[0], WEXITSTATUS(status));
+        if (!strcmp(type, "redirect"))
+        {
+            printf("+ completed '%s' [%d] \n", originalCommand, WEXITSTATUS(status));
+        }
+        else
+            printf("+ completed '%s' [%d] \n", originalCommand, WEXITSTATUS(status));
     }
 }
 void parse(char *cmd)
 {
-    bool isRedirect = false, isPipe = false, isRedirectError = false;
+    // dup2(0);
+    char *originalCommand = cmd;
+    bool isRedirect = false, isPipe = false, isRedirectError = false, isPipeError = false;
     if (strstr(cmd, ">&") != NULL)
         isRedirectError = true;
+    else if (strstr(cmd, "|&") != NULL)
+        isPipeError = true;
     else if (strstr(cmd, ">") != NULL)
         isRedirect = true;
     else if (strstr(cmd, "|") != NULL)
@@ -192,13 +203,15 @@ void parse(char *cmd)
     }
 
     if (isRedirect)
-        execute(commands, "redirect");
+        execute(originalCommand, commands, "redirect");
     else if (isRedirectError)
-        execute(commands, "redirectError");
+        execute(originalCommand, commands, "redirectError");
     else if (isPipe)
-        execute(commands, "pipe");
+        execute(originalCommand, commands, "pipe");
+    else if (isPipeError)
+        execute(originalCommand, commands, "pipeError");
     else
-        execute(commands, "none");
+        execute(originalCommand, commands, "none");
 }
 
 void readExecute()
