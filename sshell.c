@@ -12,7 +12,9 @@
 #define ARG_MAX 16
 
 int EXIT_GLOBAL = 0;
-//sssdd
+//
+
+
 
 void printError(char *errorMessage)
 {
