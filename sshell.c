@@ -20,7 +20,6 @@
 void printError(char *errorMessage) // prints the erros
 {
     fprintf(stderr, "%s", errorMessage);
-    flush(stderr);
     exit(-1);
 }
 char *removeWhiteSpace(char *string) // removes white spaces in a string
@@ -60,7 +59,7 @@ void run(char *cmd) // a function that should work like system just gets the str
     else
     {
         execvp(arg[0], arg);
-        //exit(EXIT_FAILURE);
+        exit(EXIT_FAILURE);
     }
 }
 
@@ -165,7 +164,7 @@ void execute(char *originalCommand, char *commands[16], char *type)
                 pipeline(commands[0], commands[1]);
             else
                 run(commands[0]);
-            perror("problem");
+            perror("Execvp");
             exit(1);
         }
         else if (pid > 0)
