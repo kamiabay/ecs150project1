@@ -2,11 +2,11 @@
 The biggest aspect of our program is that we decided to separate relevant blocks
  of code into their own functions:
 
-  * `readExecute()` consists of the main `while` loop that runs our program; 
+* `readExecute()` consists of the main `while` loop that runs our program; 
   it prints out the shell prompt and takes the command line, which it passes 
   into `parse()`.
 
-  * `parse(cmd)` is the function that parses through the command line to obtain 
+* `parse(cmd)` is the function that parses through the command line to obtain 
   the separate commands. 
     - First, we use the `strstr` function to check the command line to check 
     which of the delimiters was encountered (or if there exists a `>&` or `|&` 
@@ -16,8 +16,10 @@ The biggest aspect of our program is that we decided to separate relevant blocks
     - Depending on which of the booleans is true (or if none are), we call out 
     `execute()` function for that specific call; we pass the `commands` list and
      a string `type` (indicating the specific delimiter) into `execute()`.
+    - We use a string pointer `originalCommand` to save our command line and use
+    it later.
 
-  * `execute(commands, type)` holds all the function calls necessary to actually
+* `execute(commands, type)` holds all the function calls necessary to actually
    execute each system call. We check for several things:
     - `cd`: 
         - If the first command calls for `cd`, we tokenize the string once more 
@@ -37,7 +39,7 @@ The biggest aspect of our program is that we decided to separate relevant blocks
       parameters. Should there be no specific `type`, then we call our `run()` 
       function immediately. (`run()` is also called within our other functions.)
 
-  * `run(cmd)` does the final parsing through the commands that are passed 
+* `run(cmd)` does the final parsing through the commands that are passed 
   through.
     - We chose to use `strtok` with the delimiter " " to separate the system 
     call from the arguments (if any) and insert them into another list, `args`. 
@@ -45,7 +47,7 @@ The biggest aspect of our program is that we decided to separate relevant blocks
         - We chose to use `execvp()` to execute our commands since its arguments
          consist of a system call, and an array of arguments.
 
-  * `redirect(process1, filename, typeOfFile)` is called if the `execute()` 
+* `redirect(process1, filename, typeOfFile)` is called if the `execute()` 
   function finds that the boolean `isRedirect` or `isRedirectError` is `true`. 
   If so, then the third argument becomes the file descriptor for either `stderr`
    or `stdout`.
@@ -54,7 +56,7 @@ The biggest aspect of our program is that we decided to separate relevant blocks
     - After `writeToFile()` runs, we again call on our `run()` function to 
     execute our command, `process1`.
 
-  * `writeToFile(fileName, typeOfFile)` does the redirection of `stdout` (and 
+* `writeToFile(fileName, typeOfFile)` does the redirection of `stdout` (and 
   `stderr`) into the file we specify.
     - We use the `open()` function to get the file descriptor `filedesc` for the
      file that we pass in.
@@ -66,7 +68,7 @@ The biggest aspect of our program is that we decided to separate relevant blocks
     `typeOfFile` does not match the file descriptor for `stderr`, then we only 
     call one `dup2()` to redirect `stdout` to the file.
 
-  * `pipeline(process1, process2)` implements the redirection from `process1`'s
+* `pipeline(process1, process2)` implements the redirection from `process1`'s
   output to the input of `process2`.
     - We use another `fork()` here to ## somewords.
     - We have the parent process direct `stdin` to the read index in `pipe()`, 
@@ -74,17 +76,21 @@ The biggest aspect of our program is that we decided to separate relevant blocks
     `stdout` to the write index in `pipe()` and runs with `process1`.
 
 ### Extra Functions
-  * `removeWhiteSpace()` - called in `writeToFile()`; removes any whitespace
+* `removeWhiteSpace()` - called in `writeToFile()`; removes any whitespace
   within the passed string.
-  * `printError()`- simple function to print out error statements.
+* `is_space()` - checks if the entire passed string is empty. Source:
+https://stackoverflow.com/questions/3981510/getline-check-if-line-is-whitespace
+* `printError()`- simple function to print out error statements.
 
 ### Testing
 Most of our primary testing was on MAC terminals. After having the base program 
 up and running, after each major change/addition, we tested with the various 
 input/outputs from `project1.html`. After reaching the output redirection and 
-piping, we tested on the CSIF environment. Once we implemented redirection
-error, we tested using the tester script on Gradescope.
-ALL the tests work and are EXACTLY like the one that professor sent but nothing shows up on gradescoop , 
-we basically got ZER0.
+piping, we tested on the CSIF environment and **_successfully_** ran the 
+commands from `project1.html`. Once we implemented redirection error, we tested 
+using the tester script on Gradescope.
 
-can you please tell us what is wrong with our code after you review it. thank you.
+**Sidenote1: We were not able to implement the `|&` system call.
+  Sidenote2: If no possibility for regrading submissions, we would be grateful if
+ after grading is done, we could have help truly understanding why our code did 
+ not work in Gradescope.** 
