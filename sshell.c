@@ -74,6 +74,8 @@ void pipeline(char *process1, char *process2)
     }
     else
     { // parent
+        int status;
+        wait(&status);
         close(fd[1]);
         dup2(fd[0], STDIN_FILENO);
         close(fd[0]);
@@ -152,8 +154,8 @@ void execute(char *originalCommand, char *commands[16], char *type)
     }
     else
     {
-        //pid = fork();
-        if (1)
+        pid = fork();
+        if (pid == 0)
         {
             if (!strcmp(type, "redirect"))
                 redirect(commands[0], commands[1], STDOUT_FILENO);
