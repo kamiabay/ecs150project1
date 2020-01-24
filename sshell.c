@@ -142,14 +142,14 @@ void execute(char *originalCommand, char *commands[16], char *type)
         if (existValue != 0) /// works
             fprintf(stderr, "Error: no such directory\n");
 
-        fprintf(stderr, "+ completed '%s %s' [%i] \n", commands[0], values[1], existValue);
+        fprintf(stderr, "+ completed '%s %s' [%i]\n", commands[0], values[1], existValue);
     }
     else if (strstr(commands[0], "pwd") != NULL)
     {
         getcwd(path, sizeof(path));
         // fflush(stdout);
         fprintf(stdout, "%s\n", path);
-        fprintf(stderr, "+ completed '%s' [0] \n", commands[0]); // works
+        fprintf(stderr, "+ completed '%s' [0]\n", commands[0]); // works
     }
     else
     {
@@ -175,7 +175,7 @@ void execute(char *originalCommand, char *commands[16], char *type)
             // {
             //     //fprintf(stderr, "+ completed '%s' [%d]\n", originalCommand, WEXITSTATUS(status));
             // }
-            fprintf(stderr, "+ hi '%s' [%d]\n", originalCommand, WEXITSTATUS(status));
+            fprintf(stderr, "+ completed '%s' [%d]\n", originalCommand, WEXITSTATUS(status));
         }
         else
         {
