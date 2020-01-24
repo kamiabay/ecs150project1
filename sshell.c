@@ -148,7 +148,7 @@ void execute(char *originalCommand, char *commands[16], char *type)
         getcwd(path, sizeof(path));
         // fflush(stdout);
         fprintf(stdout, "%s\n", path);
-        fprintf(stderr, "+ a '%s' [0]\n", commands[0]); // works
+        fprintf(stderr, "+ completed '%s' [0]\n", commands[0]); // works
     }
     else
     {
@@ -165,9 +165,8 @@ void execute(char *originalCommand, char *commands[16], char *type)
             else
                 run(commands[0]);
         }
-        else if (pid > 1)
+        else if (pid > 0)
         {
-
             wait(&status);
             waitpid(-1, &status, 0);
             fprintf(stderr, "+ completed '%s' [%d]\n", originalCommand, WEXITSTATUS(status));
