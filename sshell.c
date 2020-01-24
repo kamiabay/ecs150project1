@@ -170,10 +170,10 @@ void execute(char *originalCommand, char *commands[16], char *type)
         wait(&status);
         if (!strcmp(type, "redirect"))
         {
-            printf("+ completed '%s' [%d] \n", originalCommand, WEXITSTATUS(status));
+            fprintf(stderr, "+ completed '%s' [%d] \n", originalCommand, WEXITSTATUS(status));
         }
         else
-            printf("+ completed '%s' [%d] \n", originalCommand, WEXITSTATUS(status));
+            fprintf(stderr, "+ completed '%s' [%d] \n", originalCommand, WEXITSTATUS(status));
     }
 }
 void parse(char *cmd)
@@ -230,7 +230,15 @@ void readExecute()
         fflush(stdout);
         /* Get command line */
         fgets(cmd, CMDLINE_MAX, stdin);
-        parse(cmd);
+        if (strstr(cmd, "exit") != NULL)
+        {
+            fprintf(stderr, "Bye...\n");
+            fprintf(stderr, " '+ completed 'exit' [0]'\n");
+
+            break;
+        }
+        else
+            parse(cmd);
         /* Print command line if stdin is not provided by terminal */
         if (!isatty(STDIN_FILENO))
         {
@@ -241,11 +249,6 @@ void readExecute()
         nl = strchr(cmd, '\n');
         if (nl)
             *nl = '\0';
-        if (strstr(cmd, "exit") != NULL)
-        {
-            fprintf(stderr, "Bye...\n");
-            break;
-        }
     }
 }
 int main(void)
