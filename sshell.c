@@ -147,7 +147,7 @@ void execute(char *originalCommand, char *commands[16], char *type)
     {
         getcwd(path, sizeof(path));
         // fflush(stdout);
-        printf("%s\n", path);
+        fprintf(stdout, "%s\n", path);
         fprintf(stderr, "+ completed '%s' [0] \n", commands[0]); // works
     }
     else
@@ -172,7 +172,7 @@ void execute(char *originalCommand, char *commands[16], char *type)
             waitpid(-1, &status, 0);
             if (!strcmp(type, "redirect"))
             {
-                fprintf(stderr, "+ completed '%s' [%d]\n", originalCommand, WEXITSTATUS(status));
+                //fprintf(stderr, "+ completed '%s' [%d]\n", originalCommand, WEXITSTATUS(status));
             }
             else
                 fprintf(stderr, "+ completed '%s' [%d]\n", originalCommand, WEXITSTATUS(status));
