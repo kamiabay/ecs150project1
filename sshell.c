@@ -152,6 +152,7 @@ void execute(char *originalCommand, char *commands[16], char *type)
     }
     else
     {
+        int status;
         pid = fork();
         if (pid == 0)
         {
@@ -164,9 +165,9 @@ void execute(char *originalCommand, char *commands[16], char *type)
             else
                 run(commands[0]);
         }
-        else
+        else if (pid > 1)
         {
-            int status;
+
             wait(&status);
             waitpid(-1, &status, 0);
             if (!strcmp(type, "redirect"))
@@ -175,6 +176,11 @@ void execute(char *originalCommand, char *commands[16], char *type)
             }
             else
                 fprintf(stderr, "+ completed '%s' [%d] \n", originalCommand, WEXITSTATUS(status));
+        }
+        else
+        {
+            perror("fork");
+            exit(1);
         }
     }
 }
