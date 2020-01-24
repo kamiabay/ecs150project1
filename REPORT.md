@@ -88,3 +88,5 @@ piping, we tested on the CSIF environment. Once we implemented redirection
 error, we tested using the tester script on Gradescope.
 ALL the tests work and are EXACTLY like the one that professor sent but nothing shows up on gradescoop , 
 we basically got ZER0.
+
+can you please tell me what is wrong in after you review our code.
