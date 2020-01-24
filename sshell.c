@@ -152,8 +152,8 @@ void execute(char *originalCommand, char *commands[16], char *type)
     }
     else
     {
-        pid = fork();
-        if (pid == 0)
+        //pid = fork();
+        if (1)
         {
             if (!strcmp(type, "redirect"))
                 redirect(commands[0], commands[1], STDOUT_FILENO);
