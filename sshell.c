@@ -10,17 +10,20 @@
 
 #define CMDLINE_MAX 512
 #define ARG_MAX 16
+#define MAX_SIZE_STRING 16
+///////
+//////
+////
+///
+// our porgram works perfect on mac/csif yet we use tster or gardescp it looks like it is not reading our output
 
-int EXIT_GLOBAL = 0;
-//sdsdsd
-
-void printError(char *errorMessage)
+void printError(char *errorMessage) // prints the erros
 {
     fprintf(stderr, "%s", errorMessage);
     //  fflush(stderr);
     exit(-1);
 }
-char *removeWhiteSpace(char *string)
+char *removeWhiteSpace(char *string) // removes white spaces in a string
 {
     int i = 0;
     char *token = strtok(string, " ");
@@ -37,7 +40,7 @@ char *removeWhiteSpace(char *string)
     }
     return arg[0];
 }
-void run(char *cmd)
+void run(char *cmd) // a function that should work like system just gets the string and does everything and calls execvp
 {
     int i = 0;
     char *token = strtok(cmd, " ");
@@ -57,10 +60,10 @@ void run(char *cmd)
     else
     {
         execvp(arg[0], arg);
-        exit(EXIT_FAILURE);
+        //exit(EXIT_FAILURE);
     }
 }
-// sdsd
+
 void pipeline(char *process1, char *process2)
 {
     int fd[2];
@@ -101,9 +104,9 @@ void writeToFile(char *fileName, int typeOfFile)
 }
 
 int is_empty(const char *s)
-{
-    while (isspace(*s) && s++)
-        ;
+{                              // easy to implement, literally had no time
+    while (isspace(*s) && s++) //this is going thorugh the string and
+        ;                      // if it sees anything but a space it returns with false
     return !*s;
 } //// https://stackoverflow.com/questions/3981510/getline-check-if-line-is-whitespace
 
@@ -122,8 +125,9 @@ void redirect(char *process1, char *filename, int typeOfFile)
 
 void execute(char *originalCommand, char *commands[16], char *type)
 {
-    char path[1000]; // could be any long
-    pid_t pid;
+    int status;
+    char *path; // could be any long
+
     if (strstr(commands[0], "cd") != NULL) /// working just need to add
     {
         char *token2 = strtok(commands[0], " ");
@@ -139,7 +143,7 @@ void execute(char *originalCommand, char *commands[16], char *type)
         strcat(path, "/");
         strcat(path, values[1]);
         int existValue = chdir(path);
-        if (existValue != 0) /// works
+        if (existValue != 0)
             fprintf(stderr, "Error: no such directory\n");
 
         fprintf(stderr, "+ completed '%s %s' [%i]\n", commands[0], values[1], existValue);
@@ -153,7 +157,7 @@ void execute(char *originalCommand, char *commands[16], char *type)
     }
     else
     {
-        int status;
+        pid_t pid;
         pid = fork();
         if (pid == 0)
         {
@@ -165,16 +169,11 @@ void execute(char *originalCommand, char *commands[16], char *type)
                 pipeline(commands[0], commands[1]);
             else
                 run(commands[0]);
+            exit(1);
         }
-        else if (pid > 1)
+        else if (pid > 0)
         {
-
-            wait(&status);
             waitpid(-1, &status, 0);
-            // if (!strcmp(type, "redirect"))
-            // {
-            //     //fprintf(stderr, "+ completed '%s' [%d]\n", originalCommand, WEXITSTATUS(status));
-            // }
             fprintf(stderr, "+ completed '%s' [%d]\n", originalCommand, WEXITSTATUS(status));
         }
         else
@@ -186,9 +185,10 @@ void execute(char *originalCommand, char *commands[16], char *type)
 }
 void parse(char *cmd)
 {
-    char *originalCommand = strdup(cmd);
-    originalCommand[strlen(originalCommand) - 1] = '\0';
+    char *originalCommand = strdup(cmd);                 // duplicates the originals commands and daves it
+    originalCommand[strlen(originalCommand) - 1] = '\0'; // makes it null terminated
     bool isRedirect = false, isPipe = false, isRedirectError = false, isPipeError = false;
+    /// checks to see what is in the command so it can later call the correct execute fucntion
     if (strstr(cmd, ">&") != NULL)
         isRedirectError = true;
     else if (strstr(cmd, "|&") != NULL)
@@ -200,16 +200,12 @@ void parse(char *cmd)
 
     int i = 0;
     char *token = strtok(cmd, ">|&");
-    char *commands[16];
+    char *commands[MAX_SIZE_STRING];
     while (token != NULL)
     {
-        // printf("before = '%s'\n", token);
-        // printf("before size = %lu\n", strlen(token));
         //token[strlen(token) - 1] = '\0';
         commands[i] = token;
         commands[i][strlen(commands[i]) - 1] = '\0'; /// adds NULL to each
-        // printf("after = '%s'\n", commands[i]);
-        // printf("after size = %lu\n", strlen(commands[i]));
         i++;
         token = strtok(NULL, ">|&");
     }
