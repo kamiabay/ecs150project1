@@ -73,7 +73,7 @@ void pipeline(char *process1, char *process2)
         run(process1);
     }
     else
-    { // parent
+    { // parentç
         close(fd[1]);
         dup2(fd[0], STDIN_FILENO);
         close(fd[0]);
